@@ -9,10 +9,6 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// func ptr[T any](i T) *T {
-// 	return &i
-// }
-
 func mustStringify(s string) string {
 	data, _ := json.Marshal(s)
 	return string(data)
