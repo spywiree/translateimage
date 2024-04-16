@@ -1,4 +1,4 @@
-package main
+package translateimage
 
 import (
 	_ "embed"
@@ -13,12 +13,12 @@ import (
 // 	return &i
 // }
 
-func MustStringify(s string) string {
+func mustStringify(s string) string {
 	data, _ := json.Marshal(s)
 	return string(data)
 }
 
-func Execute(page playwright.Page, code, mainCall string) (any, error) {
+func execute(page playwright.Page, code, mainCall string) (any, error) {
 	return page.Evaluate(code + "\n" + mainCall)
 }
 
@@ -31,12 +31,12 @@ type blob struct {
 }
 
 func download(page playwright.Page, url string) (blob, error) {
-	v, err := Execute(
+	v, err := execute(
 		page,
 		downloadJs,
 		fmt.Sprintf(
 			`download(%s)`,
-			MustStringify(url),
+			mustStringify(url),
 		),
 	)
 	if err != nil {
