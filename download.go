@@ -1,0 +1,57 @@
+package main
+
+import (
+	_ "embed"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+
+	"github.com/playwright-community/playwright-go"
+)
+
+// func ptr[T any](i T) *T {
+// 	return &i
+// }
+
+func MustStringify(s string) string {
+	data, _ := json.Marshal(s)
+	return string(data)
+}
+
+func Execute(page playwright.Page, code, mainCall string) (any, error) {
+	return page.Evaluate(code + "\n" + mainCall)
+}
+
+//go:embed js/download.js
+var downloadJs string
+
+type blob struct {
+	ContentType string `json:"contentType"`
+	Data        []byte `json:"b64data"`
+}
+
+func download(page playwright.Page, url string) (blob, error) {
+	v, err := Execute(
+		page,
+		downloadJs,
+		fmt.Sprintf(
+			`download(%s)`,
+			MustStringify(url),
+		),
+	)
+	if err != nil {
+		return blob{}, err
+	}
+
+	m := v.(map[string]any)
+
+	data, err := base64.StdEncoding.DecodeString(m["b64data"].(string))
+	if err != nil {
+		return blob{}, err
+	}
+
+	return blob{
+		ContentType: m["contentType"].(string),
+		Data:        data,
+	}, err
+}

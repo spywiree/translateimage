@@ -1,0 +1,57 @@
+# heavily inspired by: https://github.com/goreleaser/goreleaser/blob/main/.github/workflows/build.yml
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - "**/*.go"
+      - "go.*"
+
+permissions:
+  contents: read
+
+jobs:
+  golangci-lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          args: --timeout=5m
+          skip-cache: true
+
+  govulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run govulncheck
+        run: govulncheck -test ./...
+
+  semgrep:
+    uses: caarlos0/meta/.github/workflows/semgrep.yml@main
+
+  ruleguard:
+    uses: caarlos0/meta/.github/workflows/ruleguard.yml@main
+    with:
+      args: "-disable largeloopcopy"
