@@ -3,11 +3,15 @@
 on:
   pull_request:
     branches: [main]
+    paths:
+      - "**/*.go"
+      - "go.*"
   push:
     branches: [main]
     paths:
       - "**/*.go"
       - "go.*"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,10 +30,9 @@ jobs:
           go-version: stable
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v5
         with:
           args: --timeout=5m
-          skip-cache: true
 
   govulncheck:
     runs-on: ubuntu-latest
