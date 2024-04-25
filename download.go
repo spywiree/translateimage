@@ -5,12 +5,20 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/playwright-community/playwright-go"
 )
 
 func mustStringify(s string) string {
-	data, _ := json.Marshal(s)
+	data, err := json.Marshal(s)
+	if err != nil {
+		panic(
+			fmt.Sprintf(`mustStringify(%s): %s`,
+				strconv.Quote(s), err.Error(),
+			),
+		)
+	}
 	return string(data)
 }
 

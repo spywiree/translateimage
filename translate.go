@@ -46,14 +46,7 @@ func TranslateFile(filename string, source, target string) (image.Image, error) 
 	}
 	defer pw.Stop() //nolint:errcheck
 
-	browser, err := pw.Firefox.Launch(
-		playwright.BrowserTypeLaunchOptions{
-			Headless: playwright.Bool(true),
-			FirefoxUserPrefs: map[string]any{
-				"dom.events.asyncClipboard.clipboardItem": true,
-			},
-		},
-	)
+	browser, err := pw.Firefox.Launch()
 	if err != nil {
 		return nil, err
 	}
