@@ -29,8 +29,9 @@ func tempFileFromReader(r io.Reader) (string, func() error, error) {
 	return f.Name(), clean, nil
 }
 
+// Path must be absolute.
 // Supported file types: .jpg, .jpeg, .png.
-func TranslateFile(filename string, source, target string) (image.Image, error) {
+func TranslateFile(path string, source, target string) (image.Image, error) {
 	err := playwright.Install(
 		&playwright.RunOptions{
 			Browsers: []string{"firefox"},
@@ -82,7 +83,7 @@ func TranslateFile(filename string, source, target string) (image.Image, error) 
 		playwright.PageGetByRoleOptions{
 			Name: "Browse your files",
 		},
-	).SetInputFiles(filename)
+	).SetInputFiles(path)
 	if err != nil {
 		return nil, err
 	}
