@@ -2,6 +2,7 @@ package translateimage
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	"image/png"
 	"io"
@@ -81,8 +82,12 @@ func TranslateFile(path string, source, target string) (image.Image, error) {
 		playwright.PageGetByRoleOptions{
 			Name: "Reject all",
 		},
-	).Click()
-	if err != nil {
+	).Click(
+		playwright.LocatorClickOptions{
+			Timeout: playwright.Float(5000), //5s
+		},
+	)
+	if err != nil && !errors.Is(err, playwright.ErrTimeout) {
 		return nil, err
 	}
 
