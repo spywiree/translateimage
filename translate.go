@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/playwright-community/playwright-go"
+	languagecodes "github.com/spywiree/langcodes"
 )
 
 func tempFileFromReader(r io.Reader) (string, func() error, error) {
@@ -32,7 +33,7 @@ func tempFileFromReader(r io.Reader) (string, func() error, error) {
 
 // Path must be absolute.
 // Supported file types: .jpg, .jpeg, .png.
-func TranslateFile(path string, source, target string) (image.Image, error) {
+func TranslateFile(path string, source, target languagecodes.LanguageCode) (image.Image, error) {
 	err := playwright.Install(
 		&playwright.RunOptions{
 			Browsers: []string{"firefox"},
@@ -61,8 +62,8 @@ func TranslateFile(path string, source, target string) (image.Image, error) {
 
 	url := "https://translate.google.pl/?op=images"
 	url += "&hl=en"
-	url += "&sl=" + source
-	url += "&tl=" + target
+	url += "&sl=" + string(source)
+	url += "&tl=" + string(target)
 
 	_, err = page.Goto(url)
 	if err != nil {
@@ -114,7 +115,7 @@ func TranslateFile(path string, source, target string) (image.Image, error) {
 	return out, err
 }
 
-func TranslateImage(img image.Image, source, target string) (image.Image, error) {
+func TranslateImage(img image.Image, source, target languagecodes.LanguageCode) (image.Image, error) {
 	buf := new(bytes.Buffer)
 	err := png.Encode(buf, img)
 	if err != nil {
@@ -130,7 +131,7 @@ func TranslateImage(img image.Image, source, target string) (image.Image, error)
 	return TranslateFile(name, source, target)
 }
 
-func TranslateReader(r io.Reader, source, target string) (image.Image, error) {
+func TranslateReader(r io.Reader, source, target languagecodes.LanguageCode) (image.Image, error) {
 	name, clean, err := tempFileFromReader(r)
 	if err != nil {
 		return nil, err

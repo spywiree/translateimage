@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	languagecodes "github.com/spywiree/langcodes"
 	"github.com/spywiree/translateimage"
 )
 
@@ -15,7 +16,9 @@ func TranslateFile() {
 		log.Fatalln(err)
 	}
 
-	img, err := translateimage.TranslateFile(path, "auto", "en")
+	img, err := translateimage.TranslateFile(
+		path, languagecodes.DETECT_LANGUAGE, languagecodes.ENGLISH,
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -44,7 +47,9 @@ func TranslateImage() {
 		log.Fatalln(err)
 	}
 
-	img, err := translateimage.TranslateImage(src, "auto", "en")
+	img, err := translateimage.TranslateImage(
+		src, languagecodes.DETECT_LANGUAGE, languagecodes.ENGLISH,
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -68,7 +73,9 @@ func TranslateReader() {
 	}
 	defer r.Close()
 
-	img, err := translateimage.TranslateReader(r, "auto", "en")
+	img, err := translateimage.TranslateReader(
+		r, languagecodes.DETECT_LANGUAGE, languagecodes.ENGLISH,
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
