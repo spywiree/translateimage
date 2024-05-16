@@ -1,7 +1,7 @@
 ## Translate images with Google Translate in Golang
 
-[<h2>Documentation</h2>](https://pkg.go.dev/github.com/spywiree/translateimage)
- 
+<a href="https://pkg.go.dev/github.com/spywiree/translateimage"><h2>Documentation</h2></a>
+
 ---
 Install:
 ```
