@@ -11,10 +11,6 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0`
-// to disable timeout.
-var Timeout float64 = 30000
-
 func tempFileFromReader(r io.Reader) (string, func() error, error) {
 	f, err := os.CreateTemp("", "*.png")
 	if err != nil {
@@ -52,11 +48,7 @@ func TranslateFile(path string, source, target string) (image.Image, error) {
 	}
 	defer pw.Stop() //nolint:errcheck
 
-	browser, err := pw.Firefox.Launch(
-		playwright.BrowserTypeLaunchOptions{
-			Timeout: playwright.Float(Timeout),
-		},
-	)
+	browser, err := pw.Firefox.Launch()
 	if err != nil {
 		return nil, err
 	}
