@@ -12,3 +12,5 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc // indirect
 )
+
+retract v1.0.0 // Wrong package name
