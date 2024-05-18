@@ -15,7 +15,7 @@ import (
 )
 
 func tempFileFromReader(r io.Reader) (string, func() error, error) {
-	f, err := os.CreateTemp("", "*.png")
+	f, err := os.CreateTemp("", "*.jpg")
 	if err != nil {
 		return "", nil, err
 	}
@@ -147,7 +147,7 @@ func TranslateFile(path string, source, target languagecodes.LanguageCode) (imag
 
 func TranslateImage(img image.Image, source, target languagecodes.LanguageCode) (image.Image, error) {
 	buf := new(bytes.Buffer)
-	err := png.Encode(buf, img)
+	err := jpeg.Encode(buf, img, &jpeg.Options{Quality: 100})
 	if err != nil {
 		return nil, err
 	}
