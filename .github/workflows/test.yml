@@ -1,0 +1,35 @@
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.go"
+      - "go.*"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.go"
+      - "go.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Test
+        uses: robherley/go-test-action@v0
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist

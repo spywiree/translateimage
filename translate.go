@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/playwright-community/playwright-go"
 	languagecodes "github.com/spywiree/langcodes"
@@ -42,23 +44,40 @@ func TranslateFile(path string, source, target languagecodes.LanguageCode) (imag
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Driver and Firefox browser installed")
 
 	pw, err := playwright.Run()
 	if err != nil {
 		return nil, err
 	}
 	defer pw.Stop() //nolint:errcheck
+	// Logger.Println("Playwright instance started")
 
 	browser, err := pw.Firefox.Launch()
 	if err != nil {
 		return nil, err
 	}
 	defer browser.Close()
+	// Logger.Println("Firefox instance started")
 
-	page, err := browser.NewPage()
+	var pageOptions playwright.BrowserNewPageOptions
+	if Debug.Enabled {
+		videoPath, err := filepath.Abs(Debug.VideoPath)
+		if err != nil {
+			return nil, err
+		}
+
+		pageOptions = playwright.BrowserNewPageOptions{
+			RecordVideo: &playwright.RecordVideo{
+				Dir: videoPath,
+			},
+		}
+	}
+	page, err := browser.NewPage(pageOptions)
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Created a new page")
 
 	url := "https://translate.google.pl/?op=images"
 	url += "&hl=en"
@@ -69,6 +88,7 @@ func TranslateFile(path string, source, target languagecodes.LanguageCode) (imag
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Set the site URL to:", url)
 
 	err = page.GetByRole(
 		*playwright.AriaRoleButton,
@@ -93,6 +113,7 @@ func TranslateFile(path string, source, target languagecodes.LanguageCode) (imag
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("The file has been uploaded")
 
 	imgElement := page.Locator(
 		`div.CMhTbb:nth-child(2) > img:nth-child(1)`,
@@ -101,16 +122,25 @@ func TranslateFile(path string, source, target languagecodes.LanguageCode) (imag
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Image element has been found")
 
 	blob, err := download(page, blobUrl)
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Image downloaded")
 
-	out, _, err := image.Decode(bytes.NewBuffer(blob.Data))
+	var out image.Image
+	switch blob.ContentType {
+	case "image/png":
+		out, err = png.Decode(bytes.NewBuffer(blob.Data))
+	case "image/jpeg":
+		out, err = jpeg.Decode(bytes.NewBuffer(blob.Data))
+	}
 	if err != nil {
 		return nil, err
 	}
+	// Logger.Println("Image decoded")
 
 	return out, err
 }
