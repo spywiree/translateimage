@@ -12,12 +12,8 @@ import (
 	"github.com/spywiree/translateimage"
 )
 
-const InputImage = "image.png"
-
-func TestTranslateFile(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/file"
-
-	path, err := filepath.Abs(InputImage)
+func translateFile(t *testing.T, path string) {
+	path, err := filepath.Abs(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,10 +37,8 @@ func TestTranslateFile(t *testing.T) {
 	}
 }
 
-func TestTranslateImage(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/image"
-
-	r, err := os.Open(InputImage)
+func translateImage(t *testing.T, path string) {
+	r, err := os.Open(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,10 +68,8 @@ func TestTranslateImage(t *testing.T) {
 	}
 }
 
-func TestTranslateReader(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/reader"
-
-	r, err := os.Open(InputImage)
+func translateReader(t *testing.T, path string) {
+	r, err := os.Open(path)
 	if err != nil {
 		t.Fatal(err)
 	}
