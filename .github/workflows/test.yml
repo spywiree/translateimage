@@ -40,7 +40,7 @@ jobs:
             ~/Library/Caches/ms-playwright
             ~\AppData\Local\ms-playwright-go
             ~\AppData\Local\ms-playwright
-          key: ${{ runner.os }}-go-firefox
+          key: playwright-go-${{ runner.os }}-firefox
  
       - name: Test
         uses: robherley/go-test-action@v0
