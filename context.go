@@ -119,12 +119,7 @@ func (ctx *Context) Close() error {
 		return err
 	}
 
-	err = ctx.pw.Stop()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return ctx.pw.Stop()
 }
 
 func NewContext() (*Context, error) {
