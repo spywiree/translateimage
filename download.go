@@ -29,33 +29,23 @@ func execute(page playwright.Page, code, mainCall string) (any, error) {
 //go:embed js/download.js
 var downloadJs string
 
-type blob struct {
-	ContentType string `json:"contentType"`
-	Data        []byte `json:"b64data"`
-}
-
-func download(page playwright.Page, url string) (blob, error) {
-	v, err := execute(
-		page,
-		downloadJs,
-		fmt.Sprintf(
-			`download(%s)`,
-			mustStringify(url),
-		),
+func download(page playwright.Page, url string) (*ImageData, error) {
+	v, err := execute(page, downloadJs,
+		fmt.Sprintf(`download(%s)`, mustStringify(url)),
 	)
 	if err != nil {
-		return blob{}, err
+		return nil, err
 	}
 
 	m := v.(map[string]any)
 
 	data, err := base64.StdEncoding.DecodeString(m["b64data"].(string))
 	if err != nil {
-		return blob{}, err
+		return nil, err
 	}
 
-	return blob{
-		ContentType: m["contentType"].(string),
-		Data:        data,
+	return &ImageData{
+		mimeType: m["contentType"].(string),
+		data:     data,
 	}, err
 }
