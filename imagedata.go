@@ -2,6 +2,7 @@ package translateimage
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -58,6 +59,34 @@ func (i *ImageData) decode() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+var UnknownMimeType = errors.New("unknown mime type")
+
+func (i *ImageData) ConvertTo(mimeType string) ([]byte, error) {
+	if i.mimeType == mimeType {
+		return i.data, nil
+	}
+
+	if i.img == nil {
+		i.decode()
+	}
+
+	buf := bytes.NewBuffer(nil)
+	var err error
+	switch mimeType {
+	case "image/png":
+		err = png.Encode(buf, i.img)
+	case "image/jpeg":
+		err = jpeg.Encode(buf, i.img, nil)
+	default:
+		err = UnknownMimeType
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
 func (i *ImageData) Data() []byte {

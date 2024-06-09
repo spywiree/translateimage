@@ -3,7 +3,6 @@ package translateimage_test
 import (
 	"image"
 	_ "image/jpeg"
-	"image/png"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,7 +31,12 @@ func translateFile(t *testing.T, ctx *translateimage.Context, path string, optio
 	}
 	defer w.Close()
 
-	err = png.Encode(w, img)
+	data, err := img.ConvertTo("image/png")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = w.Write(data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +67,12 @@ func translateImage(t *testing.T, ctx *translateimage.Context, path string, opti
 	}
 	defer w.Close()
 
-	err = png.Encode(w, img)
+	data, err := img.ConvertTo("image/png")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = w.Write(data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +98,12 @@ func translateReader(t *testing.T, ctx *translateimage.Context, path string, opt
 	}
 	defer w.Close()
 
-	err = png.Encode(w, img)
+	data, err := img.ConvertTo("image/png")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = w.Write(data)
 	if err != nil {
 		t.Fatal(err)
 	}
