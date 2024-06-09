@@ -2,44 +2,23 @@ package translateimage
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"image"
 	"image/jpeg"
 	"io"
-	"path/filepath"
 
 	"github.com/playwright-community/playwright-go"
 	langcodes "github.com/spywiree/langcodes"
-	"golang.org/x/sync/semaphore"
 )
 
 type Context struct {
 	pw      *playwright.Playwright
 	browser playwright.Browser
-
-	sem *semaphore.Weighted
+	context playwright.BrowserContext
 }
 
 func (ctx *Context) TranslateFile(path string, source, target langcodes.LanguageCode, options ...Options) (*ImageData, error) {
-	_ = ctx.sem.Acquire(context.Background(), 1)
-	defer ctx.sem.Release(1)
-
-	opt := getOptions(options)
-
-	var pageOptions playwright.BrowserNewPageOptions
-	if opt.DebugMode {
-		videoPath, err := filepath.Abs(opt.VideoPath)
-		if err != nil {
-			return nil, err
-		}
-
-		pageOptions = playwright.BrowserNewPageOptions{
-			RecordVideo: &playwright.RecordVideo{
-				Dir: videoPath,
-			},
-		}
-	}
+	// opt := getOptions(options)
 
 	// var ctxOptions playwright.BrowserNewContextOptions
 	// if opt.DebugMode {
@@ -55,13 +34,7 @@ func (ctx *Context) TranslateFile(path string, source, target langcodes.Language
 	// 	}
 	// }
 
-	// context, err := ctx.browser.NewContext(ctxOptions)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer context.Close()
-
-	page, err := ctx.browser.NewPage(pageOptions)
+	page, err := ctx.context.NewPage()
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +45,7 @@ func (ctx *Context) TranslateFile(path string, source, target langcodes.Language
 	url += "&sl=" + string(source)
 	url += "&tl=" + string(target)
 
-	_, err = page.Goto(url,
-		playwright.PageGotoOptions{
-			WaitUntil: playwright.WaitUntilStateNetworkidle,
-		},
-	)
+	_, err = page.Goto(url)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +117,12 @@ func (ctx *Context) TranslateReader(r io.Reader, source, target langcodes.Langua
 }
 
 func (ctx *Context) Close() error {
-	err := ctx.browser.Close()
+	err := ctx.context.Close()
+	if err != nil {
+		return err
+	}
+
+	err = ctx.browser.Close()
 	if err != nil {
 		return err
 	}
@@ -176,6 +150,10 @@ func NewContext() (*Context, error) {
 		return nil, err
 	}
 
-	return &Context{pw: pw, browser: browser,
-		sem: semaphore.NewWeighted(2)}, nil
+	context, err := browser.NewContext()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Context{pw: pw, browser: browser, context: context}, nil
 }

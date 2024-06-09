@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/playwright-community/playwright-go v0.4201.1
 	github.com/spywiree/langcodes v1.1.0
+	golang.org/x/sync v0.7.0
 )
 
 require (

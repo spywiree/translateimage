@@ -7,16 +7,64 @@ import (
 )
 
 func TestTranslateJpegFile(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/jpeg/file"
-	translateFile(t, "image.jpeg")
+	if PARALLEL {
+		t.Parallel()
+	}
+	if !GLOBALCONTEXT {
+		var err error
+		ctx, err = translateimage.NewContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer ctx.Close()
+	}
+
+	translateFile(t, ctx, "image.jpeg",
+		translateimage.Options{
+			DebugMode: true,
+			VideoPath: "dist/jpeg/file",
+		},
+	)
 }
 
 func TestTranslateJpegImage(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/jpeg/image"
-	translateImage(t, "image.jpeg")
+	if PARALLEL {
+		t.Parallel()
+	}
+	if !GLOBALCONTEXT {
+		var err error
+		ctx, err = translateimage.NewContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer ctx.Close()
+	}
+
+	translateImage(t, ctx, "image.jpeg",
+		translateimage.Options{
+			DebugMode: true,
+			VideoPath: "dist/jpeg/image",
+		},
+	)
 }
 
 func TestTranslateJpegReader(t *testing.T) {
-	translateimage.Debug.VideoPath = "dist/jpeg/reader"
-	translateReader(t, "image.jpeg")
+	if PARALLEL {
+		t.Parallel()
+	}
+	if !GLOBALCONTEXT {
+		var err error
+		ctx, err = translateimage.NewContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer ctx.Close()
+	}
+
+	translateReader(t, ctx, "image.jpeg",
+		translateimage.Options{
+			DebugMode: true,
+			VideoPath: "dist/jpeg/reader",
+		},
+	)
 }
