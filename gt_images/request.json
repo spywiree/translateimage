@@ -1,0 +1,16 @@
+{
+  "URL": [
+    "https://cbu01.alicdn.com/img/ibank/O1CN01LdZDpx1qMLl44TLGV_!!2215685915481-0-cib.jpg",
+    "https://cbu01.alicdn.com/img/ibank/O1CN01LdZDpx1qMLl44TLGV_!!2215685915481-0-cib.jpg"
+  ],
+  "Sl": "DETECT_LANGUAGE",
+  "TL": "ENGLISH",
+  "ID": "09343436",
+  "DeleteMode": 0
+}
+
+//
+// GOOS=darwin GOARCH=arm64 go build -o translateimagesM1
+// GOOS=windows GOARCH=amd64 go build -o translateimageswindows
+// GOOS=linux GOARCH=amd64 go build -o translateimageslinux
+// go build -o translateimagesmac
