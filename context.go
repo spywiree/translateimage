@@ -41,26 +41,6 @@ func (ctx *Context) TranslateFile(path string, source, target langcodes.Language
 		}
 	}
 
-	// var ctxOptions playwright.BrowserNewContextOptions
-	// if opt.DebugMode {
-	// 	videoPath, err := filepath.Abs(opt.VideoPath)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	ctxOptions = playwright.BrowserNewContextOptions{
-	// 		RecordVideo: &playwright.RecordVideo{
-	// 			Dir: videoPath,
-	// 		},
-	// 	}
-	// }
-
-	// context, err := ctx.browser.NewContext(ctxOptions)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer context.Close()
-
 	page, err := ctx.browser.NewPage(pageOptions)
 	if err != nil {
 		return nil, err
