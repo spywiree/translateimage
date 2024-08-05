@@ -42,9 +42,9 @@ func (i *ImageData) safeDecode() (image.Image, error) {
 
 	switch i.mimeType {
 	case "image/png":
-		img, err = png.Decode(bytes.NewBuffer(i.data))
+		img, err = png.Decode(bytes.NewReader(i.data))
 	case "image/jpeg":
-		img, err = jpeg.Decode(bytes.NewBuffer(i.data))
+		img, err = jpeg.Decode(bytes.NewReader(i.data))
 	}
 	if err != nil {
 		return nil, err
