@@ -1,12 +1,10 @@
 # custom
 on:
   pull_request:
-    branches: [main]
     paths:
       - "**/*.go"
       - "go.*"
   push:
-    branches: [main]
     paths:
       - "**/*.go"
       - "go.*"
