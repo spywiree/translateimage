@@ -1,12 +1,12 @@
 package translateimage
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"image"
 	"image/jpeg"
 	"io"
+	"os"
 	"path/filepath"
 
 	"github.com/playwright-community/playwright-go"
@@ -102,29 +102,37 @@ func (ctx *Context) TranslateFile(path string, source, target langcodes.Language
 }
 
 func (ctx *Context) TranslateImage(img image.Image, source, target langcodes.LanguageCode, options ...Options) (*ImageData, error) {
-	buf := new(bytes.Buffer)
-	err := jpeg.Encode(buf, img, &jpeg.Options{Quality: 100})
+	f, err := os.CreateTemp("", "*.jpeg")
+	if err != nil {
+		return nil, err
+	}
+	// Close the file, then delete it
+	defer os.Remove(f.Name())
+	defer f.Close()
+
+	err = jpeg.Encode(f, img, &jpeg.Options{Quality: 100})
 	if err != nil {
 		return nil, err
 	}
 
-	name, clean, err := tempFileFromReader(buf, "jpeg")
-	if err != nil {
-		return nil, err
-	}
-	defer clean() //nolint:errcheck
-
-	return ctx.TranslateFile(name, source, target, options...)
+	return ctx.TranslateFile(f.Name(), source, target, options...)
 }
 
 func (ctx *Context) TranslateReader(r io.Reader, source, target langcodes.LanguageCode, options ...Options) (*ImageData, error) {
-	name, clean, err := tempFileFromReader(r, "png")
+	f, err := os.CreateTemp("", "*.png")
 	if err != nil {
 		return nil, err
 	}
-	defer clean() //nolint:errcheck
+	// Close the file, then delete it
+	defer os.Remove(f.Name())
+	defer f.Close()
 
-	return ctx.TranslateFile(name, source, target, options...)
+	_, err = io.Copy(f, r)
+	if err != nil {
+		return nil, err
+	}
+
+	return ctx.TranslateFile(f.Name(), source, target, options...)
 }
 
 func (ctx *Context) Close() error {
